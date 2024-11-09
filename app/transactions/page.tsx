@@ -13,7 +13,11 @@ export default async function Transactions() {
     redirect("/login");
   }
 
-  const transactions = await db.transaction.findMany({});
+  const transactions = await db.transaction.findMany({
+    where: {
+        userId
+    }
+  });
 
   return (
     <>
