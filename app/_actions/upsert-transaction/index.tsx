@@ -28,7 +28,7 @@ export async function upsertTransaction(params: ApsertTransactionParams ) {
     update: {...params, userId},
     create: {...params, userId},
     where: {
-      id: params.id,
+      id: params.id ?? "",
     },
   });
 
