@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowDownUpIcon } from "lucide-react";
+import { ArrowDownUpIcon, Loader } from "lucide-react";
 import { Button } from "./ui/button";
 import {
   DialogTrigger,
@@ -44,10 +44,12 @@ import {
   TRANSACTIONS_TYPE_OPTIONS,
 } from "../_constants/transactions";
 import { DatePicker } from "./ui/date-picker";
+import { addTransaction } from "../_actions/add-transaction";
+import { useState } from "react";
 
 const formSchema = z.object({
   name: z.string().trim().min(1, { message: "Nome é obrigatório" }),
-  amount: z.string().trim().min(1, { message: "O valor é obrigatório" }),
+  amount: z.number().positive({ message: "Valor deve ser positivo" }),
   type: z.nativeEnum(TransactionType, {
     required_error: "Tipo é obrigatório",
   }),
@@ -66,10 +68,12 @@ type FormSchema = z.infer<typeof formSchema>
 
 export function AddTransactionButton() {
 
+  const [dialogIsOpen, setDialogIsOpen] = useState(false)
+
     const form = useForm<FormSchema>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-          amount: "",
+          amount: 0,
           name: "",
           type: TransactionType.DEPOSIT,
           category: TransactionCategory.OTHER,
@@ -78,12 +82,19 @@ export function AddTransactionButton() {
         },
       });
 
-  const onSubmit = (data: FormSchema) => {
-    console.log({data});
-  };
+  async function onSubmit(data: FormSchema) {
+    try {
+      await addTransaction(data)
+      setDialogIsOpen(false)
+      form.reset()
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   return (
-    <Dialog onOpenChange={(open) => {
+    <Dialog open={dialogIsOpen} onOpenChange={(open) => {
+      setDialogIsOpen(open)
         if(!open) {
             form.reset()
         }
@@ -121,7 +132,15 @@ export function AddTransactionButton() {
                 <FormItem>
                   <FormLabel>Valor</FormLabel>
                   <FormControl>
-                    <MoneyInput placeholder="Digite o valor..." {...field} />
+                  <MoneyInput
+                      placeholder="Digite o valor..."
+                      value={field.value}
+                      onValueChange={({ floatValue }) =>
+                        field.onChange(floatValue)
+                      }
+                      onBlur={field.onBlur}
+                      disabled={field.disabled}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -224,7 +243,9 @@ export function AddTransactionButton() {
               <DialogClose asChild>
               <Button type="button" variant="outline">Cancelar</Button>
               </DialogClose>
-              <Button type="submit">Adicionar</Button>
+              <Button type="submit" disabled={form.formState.isLoading}>
+                {form.formState.isLoading ? <Loader className="animate-spin"/> : "Adicionar"}
+              </Button>
             </DialogFooter>
           </form>
         </Form>
