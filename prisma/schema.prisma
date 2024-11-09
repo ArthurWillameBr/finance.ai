@@ -37,7 +37,7 @@ enum TransactionCategory {
   TRANSPORTATION
   FOOD
   ENTERTAINMENT
-  HELTH
+  HEALTH
   UTILITY
   SALARY
   EDUCATION
@@ -47,8 +47,8 @@ enum TransactionCategory {
 enum TransactionPaymentMethod {
   CREDIT_CARD
   DEBIT_CARD
-  BACK_TRANSFER
-  BACK_SLIP
+  BANK_TRANSFER
+  BANK_SLIP
   CASH
   PIX
   OTHER
