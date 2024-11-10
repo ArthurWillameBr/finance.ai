@@ -1,4 +1,18 @@
-import { TransactionCategory, TransactionPaymentMethod, TransactionType } from "@prisma/client";
+import {
+  TransactionCategory,
+  TransactionPaymentMethod,
+  TransactionType,
+} from "@prisma/client";
+
+export const TRANSACTION_PAYMENT_METHOD_ICONS = {
+  [TransactionPaymentMethod.CREDIT_CARD]: "credit-card.svg",
+  [TransactionPaymentMethod.DEBIT_CARD]: "debit-card.svg",
+  [TransactionPaymentMethod.BANK_TRANSFER]: "bank-transfer.svg",
+  [TransactionPaymentMethod.BANK_SLIP]: "bank-slip.svg",
+  [TransactionPaymentMethod.CASH]: "money.svg",
+  [TransactionPaymentMethod.PIX]: "pix.svg",
+  [TransactionPaymentMethod.OTHER]: "other.svg",
+};
 
 export const TRANSACTION_CATEGORY_LABELS = {
   EDUCATION: "Educação",
@@ -22,14 +36,14 @@ export const TRANSACTION_PAYMENT_METHOD_LABELS = {
   PIX: "Pix",
 };
 
-export const TRANSACTIONS_TYPE_OPTIONS = [
-  {
-    value: TransactionType.DEPOSIT,
-    label: "Depósito",
-  },
+export const TRANSACTION_TYPE_OPTIONS = [
   {
     value: TransactionType.EXPENSE,
     label: "Despesa",
+  },
+  {
+    value: TransactionType.DEPOSIT,
+    label: "Depósito",
   },
   {
     value: TransactionType.INVESTMENT,
@@ -40,69 +54,73 @@ export const TRANSACTIONS_TYPE_OPTIONS = [
 export const TRANSACTION_PAYMENT_METHOD_OPTIONS = [
   {
     value: TransactionPaymentMethod.BANK_TRANSFER,
-    label: "Transferência Bancária",
+    label:
+      TRANSACTION_PAYMENT_METHOD_LABELS[TransactionPaymentMethod.BANK_TRANSFER],
   },
   {
     value: TransactionPaymentMethod.BANK_SLIP,
-    label: "Boleto Bancário",
+    label:
+      TRANSACTION_PAYMENT_METHOD_LABELS[TransactionPaymentMethod.BANK_SLIP],
   },
   {
     value: TransactionPaymentMethod.CASH,
-    label: "Dinheiro",
+    label: TRANSACTION_PAYMENT_METHOD_LABELS[TransactionPaymentMethod.CASH],
   },
   {
     value: TransactionPaymentMethod.CREDIT_CARD,
-    label: "Cartão de Crédito",
+    label:
+      TRANSACTION_PAYMENT_METHOD_LABELS[TransactionPaymentMethod.CREDIT_CARD],
   },
   {
     value: TransactionPaymentMethod.DEBIT_CARD,
-    label: "Cartão de Débito",
+    label:
+      TRANSACTION_PAYMENT_METHOD_LABELS[TransactionPaymentMethod.DEBIT_CARD],
   },
   {
     value: TransactionPaymentMethod.OTHER,
-    label: "Outros",
+    label: TRANSACTION_PAYMENT_METHOD_LABELS[TransactionPaymentMethod.OTHER],
   },
   {
     value: TransactionPaymentMethod.PIX,
-    label: "Pix",
+    label: TRANSACTION_PAYMENT_METHOD_LABELS[TransactionPaymentMethod.PIX],
   },
-]
+];
 
 export const TRANSACTION_CATEGORY_OPTIONS = [
   {
     value: TransactionCategory.EDUCATION,
-    label: "Educação",
+    label: TRANSACTION_CATEGORY_LABELS[TransactionCategory.EDUCATION],
   },
   {
     value: TransactionCategory.ENTERTAINMENT,
-    label: "Entretenimento",
+    label: TRANSACTION_CATEGORY_LABELS[TransactionCategory.ENTERTAINMENT],
   },
   {
     value: TransactionCategory.FOOD,
-    label: "Alimentação",
+    label: TRANSACTION_CATEGORY_LABELS[TransactionCategory.FOOD],
   },
   {
     value: TransactionCategory.HEALTH,
-    label: "Saúde",
+    label: TRANSACTION_CATEGORY_LABELS[TransactionCategory.HEALTH],
   },
   {
     value: TransactionCategory.HOUSING,
-    label: "Moradia",
+    label: TRANSACTION_CATEGORY_LABELS[TransactionCategory.HOUSING],
   },
   {
     value: TransactionCategory.OTHER,
-    label: "Outros",
+    label: TRANSACTION_CATEGORY_LABELS[TransactionCategory.OTHER],
   },
   {
     value: TransactionCategory.SALARY,
-    label: "Salário",
+    label: TRANSACTION_CATEGORY_LABELS[TransactionCategory.SALARY],
   },
   {
     value: TransactionCategory.TRANSPORTATION,
-    label: "Transporte",
+    label: TRANSACTION_CATEGORY_LABELS[TransactionCategory.TRANSPORTATION],
   },
   {
     value: TransactionCategory.UTILITY,
-    label: "Utilidades",
+    label: TRANSACTION_CATEGORY_LABELS[TransactionCategory.UTILITY],
   },
-]
+];

@@ -26,11 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import {
-  TRANSACTION_CATEGORY_OPTIONS,
-  TRANSACTION_PAYMENT_METHOD_OPTIONS,
-  TRANSACTIONS_TYPE_OPTIONS,
-} from "../_constants/transactions";
+
 import { DatePicker } from "./ui/date-picker";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -41,6 +37,7 @@ import {
 } from "@prisma/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { upsertTransaction } from "../_actions/upsert-transaction";
+import { TRANSACTION_CATEGORY_OPTIONS, TRANSACTION_PAYMENT_METHOD_OPTIONS, TRANSACTION_TYPE_OPTIONS } from "../_constants/transactions";
 
 interface UpsertTransactionProps {
   dialogIsOpen: boolean;
@@ -77,7 +74,7 @@ export function UpsertTransactionDialog({
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: defaultValues ?? {
-      amount: 0,
+      amount: 50,
       name: "",
       type: TransactionType.DEPOSIT,
       category: TransactionCategory.OTHER,
@@ -168,7 +165,7 @@ export function UpsertTransactionDialog({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {TRANSACTIONS_TYPE_OPTIONS.map((option) => (
+                      {TRANSACTION_TYPE_OPTIONS.map((option) => (
                         <SelectItem key={option.value} value={option.value}>
                           {option.label}
                         </SelectItem>
