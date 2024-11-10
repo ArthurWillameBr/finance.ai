@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { UpsertTransactionDialog } from "./upsert-transaction-dialog";
+import UpsertTransactionDialog from "./upsert-transaction-dialog";
 import { ArrowDownUpIcon } from "lucide-react";
 import { Button } from "./ui/button";
 
@@ -15,8 +15,8 @@ export function AddTransactionButton() {
         <ArrowDownUpIcon />
       </Button>
       <UpsertTransactionDialog
-        dialogIsOpen={dialogIsOpen}
-        setDialogIsOpen={setDialogIsOpen}
+        isOpen={dialogIsOpen}
+        setIsOpen={setDialogIsOpen}
       />
     </>
   );

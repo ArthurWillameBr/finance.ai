@@ -1,3 +1,14 @@
+import { Button } from "./ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
 import {
   Form,
   FormControl,
@@ -7,17 +18,6 @@ import {
   FormMessage,
 } from "./ui/form";
 import { Input } from "./ui/input";
-import { Button } from "./ui/button";
-import {
-  DialogTrigger,
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-  DialogClose,
-} from "./ui/dialog";
 import { MoneyInput } from "./money-input";
 import {
   Select,
@@ -26,80 +26,91 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-
+import {
+  TRANSACTION_CATEGORY_OPTIONS,
+  TRANSACTION_PAYMENT_METHOD_OPTIONS,
+  TRANSACTION_TYPE_OPTIONS,
+} from "../_constants/transactions";
 import { DatePicker } from "./ui/date-picker";
-import { useForm } from "react-hook-form";
 import { z } from "zod";
 import {
+  TransactionType,
   TransactionCategory,
   TransactionPaymentMethod,
-  TransactionType,
 } from "@prisma/client";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { upsertTransaction } from "../_actions/upsert-transaction";
-import { TRANSACTION_CATEGORY_OPTIONS, TRANSACTION_PAYMENT_METHOD_OPTIONS, TRANSACTION_TYPE_OPTIONS } from "../_constants/transactions";
 
-interface UpsertTransactionProps {
-  dialogIsOpen: boolean;
-  setDialogIsOpen: (isOpen: boolean) => void;
-  transactionId: string;
+interface UpsertTransactionDialogProps {
+  isOpen: boolean;
   defaultValues?: FormSchema;
+  transactionId?: string;
+  setIsOpen: (isOpen: boolean) => void;
 }
 
 const formSchema = z.object({
-  name: z.string().trim().min(1, { message: "Nome é obrigatório" }),
-  amount: z.number().positive({ message: "Valor deve ser positivo" }),
+  name: z.string().trim().min(1, {
+    message: "O nome é obrigatório.",
+  }),
+  amount: z
+    .number({
+      required_error: "O valor é obrigatório.",
+    })
+    .positive({
+      message: "O valor deve ser positivo.",
+    }),
   type: z.nativeEnum(TransactionType, {
-    required_error: "Tipo é obrigatório",
+    required_error: "O tipo é obrigatório.",
   }),
   category: z.nativeEnum(TransactionCategory, {
-    required_error: "Categoria é obrigatória",
+    required_error: "A categoria é obrigatória.",
   }),
   paymentMethod: z.nativeEnum(TransactionPaymentMethod, {
-    required_error: "Método de pagamento é obrigatório",
+    required_error: "O método de pagamento é obrigatório.",
   }),
   date: z.date({
-    required_error: "Data é obrigatória",
+    required_error: "A data é obrigatória.",
   }),
 });
 
-export type FormSchema = z.infer<typeof formSchema>;
+type FormSchema = z.infer<typeof formSchema>;
 
-export function UpsertTransactionDialog({
-  dialogIsOpen,
-  setDialogIsOpen,
+export default function UpsertTransactionDialog({
+  isOpen,
   defaultValues,
   transactionId,
-}: UpsertTransactionProps) {
+  setIsOpen,
+}: UpsertTransactionDialogProps){
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: defaultValues ?? {
       amount: 50,
-      name: "",
-      type: TransactionType.DEPOSIT,
       category: TransactionCategory.OTHER,
-      paymentMethod: TransactionPaymentMethod.CASH,
       date: new Date(),
+      name: "",
+      paymentMethod: TransactionPaymentMethod.CASH,
+      type: TransactionType.EXPENSE,
     },
   });
 
-  async function onSubmit(data: FormSchema) {
+  const onSubmit = async (data: FormSchema) => {
     try {
       await upsertTransaction({ ...data, id: transactionId });
-      setDialogIsOpen(false);
+      setIsOpen(false);
       form.reset();
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
-  }
+  };
 
-  const isUpdate = !!transactionId;
+  const isUpdate = Boolean(transactionId);
 
   return (
     <Dialog
-      open={dialogIsOpen}
+      open={isOpen}
       onOpenChange={(open) => {
-        setDialogIsOpen(open);
+        setIsOpen(open);
         if (!open) {
           form.reset();
         }
@@ -109,10 +120,11 @@ export function UpsertTransactionDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            {isUpdate ? "Atualizar transação" : "Adicionar transação"}
+            {isUpdate ? "Atualizar" : "Criar"} transação
           </DialogTitle>
           <DialogDescription>Insira as informações abaixo</DialogDescription>
         </DialogHeader>
+
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField
@@ -161,39 +173,11 @@ export function UpsertTransactionDialog({
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Selecione uma tipo de transação" />
+                        <SelectValue placeholder="Select a verified email to display" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
                       {TRANSACTION_TYPE_OPTIONS.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="paymentMethod"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Método de pagamento</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione um método de pagamento" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {TRANSACTION_PAYMENT_METHOD_OPTIONS.map((option) => (
                         <SelectItem key={option.value} value={option.value}>
                           {option.label}
                         </SelectItem>
@@ -216,11 +200,38 @@ export function UpsertTransactionDialog({
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Selecione uma categoria" />
+                        <SelectValue placeholder="Selecione a categoria..." />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
                       {TRANSACTION_CATEGORY_OPTIONS.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="paymentMethod"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Método de pagamento</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione um método de pagamento..." />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {TRANSACTION_PAYMENT_METHOD_OPTIONS.map((option) => (
                         <SelectItem key={option.value} value={option.value}>
                           {option.label}
                         </SelectItem>
@@ -248,7 +259,7 @@ export function UpsertTransactionDialog({
                   Cancelar
                 </Button>
               </DialogClose>
-              <Button type="submit" disabled={form.formState.isLoading}>
+              <Button type="submit">
                 {isUpdate ? "Atualizar" : "Adicionar"}
               </Button>
             </DialogFooter>
